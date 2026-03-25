@@ -85,6 +85,11 @@ html, body, #root {
 .dpill.today.active .dp-num,
 .dpill.today.active .dp-dow { color: #fff; }
 
+/* Vacation range picker */
+.vac-range { display: flex; align-items: center; gap: 6px; }
+.vac-range .fi { flex: 1; }
+.vac-range-arrow { color: var(--accent); font-size: 16px; font-weight: 700; flex-shrink: 0; }
+
 /* ── APP LAYOUT ── */
 .app-wrap { height: 100svh; display: flex; flex-direction: column; overflow: hidden; }
 .cal-outer { flex: 1; overflow: auto; background: var(--bg); }
@@ -99,10 +104,10 @@ html, body, #root {
 .ph-av { width: 30px; height: 30px; border-radius: 50%; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #fff; }
 .ph-name { font-size: 13px; font-weight: 700; }
 .ph-count { font-size: 10px; color: var(--text-mid); margin-top: 1px; }
-.t-label { width: var(--tw); height: var(--rh); background: var(--surface); border-left: 1px solid var(--border); border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: flex-end; padding: 4px 7px 0; font-size: 10px; font-weight: 600; color: var(--text-dim); position: sticky; right: 0; z-index: 10; }
-.t-label.half { border-bottom: 1px dashed var(--border); color: transparent; }
-.slot { height: var(--rh); border-left: 1px solid var(--border); border-bottom: 1px solid var(--border); position: relative; cursor: pointer; min-width: 150px; transition: filter .1s; }
-.slot.half { border-bottom: 1px dashed rgba(0,0,0,.06); }
+.t-label { width: var(--tw); height: var(--rh); background: var(--surface); border-left: 1px solid var(--border); border-bottom: 1px dashed rgba(0,0,0,.12); display: flex; align-items: flex-start; justify-content: flex-end; padding: 4px 7px 0; font-size: 10px; font-weight: 600; color: var(--text-dim); position: sticky; right: 0; z-index: 10; }
+.t-label.half { border-bottom: 1px solid var(--border); color: transparent; }
+.slot { height: var(--rh); border-left: 1px solid var(--border); border-bottom: 1px dashed rgba(0,0,0,.06); position: relative; cursor: pointer; min-width: 150px; transition: filter .1s; }
+.slot.half { border-bottom: 1px solid var(--border); }
 .slot:hover { filter: brightness(.96); }
 .vac-block { position: absolute; border-radius: 8px; z-index: 6; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; pointer-events: none; }
 .now-line { position: absolute; right: 0; left: 0; height: 2px; background: #e53935; z-index: 8; pointer-events: none; }

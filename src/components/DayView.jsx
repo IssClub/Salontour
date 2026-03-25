@@ -38,7 +38,6 @@ export default function DayView({ curDate, settings, providers, appointments, va
   // Now line
   const nowMins  = new Date().getHours() * 60 + new Date().getMinutes()
   const showNow  = curDate === today() && nowMins >= open && nowMins <= close
-  const hdrH_est = RH // estimated header height before mount
 
   return (
     <div
@@ -85,8 +84,12 @@ export default function DayView({ curDate, settings, providers, appointments, va
         ]
       })}
 
-      {/* Vacation overlays */}
-      <VacationOverlays providers={providers} vacations={vacations} curDate={curDate} open={open} close={close} />
+      {/* Vacation overlays — absolute positioned like ApptBlock */}
+      {providers.map(p =>
+        isOnVacation(vacations, p.id, curDate)
+          ? <VacationOverlay key={p.id} provider={p} open={open} close={close} />
+          : null
+      )}
 
       {/* Appointment blocks */}
       {dayAppts.map(appt => (
@@ -105,35 +108,58 @@ export default function DayView({ curDate, settings, providers, appointments, va
   )
 }
 
-function VacationOverlays({ providers, vacations, curDate, open, close }) {
+function VacationOverlay({ provider, open, close }) {
+  const ref = useRef(null)
+  const col = PCOLS[provider.color]
   const totalSlots = (close - open) / 30
-  return providers.map((p, idx) => {
-    if (!isOnVacation(vacations, p.id, curDate)) return null
-    const col = PCOLS[p.color]
-    return (
-      <div
-        key={p.id}
-        style={{
-          gridColumn: idx + 2,
-          gridRow: `2 / span ${totalSlots}`,
-          margin: '2px 3px',
-          background: `${col}18`,
-          border: `2px dashed ${col}55`,
-          color: col,
-          borderRadius: 8,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 13,
-          fontWeight: 700,
-          zIndex: 6,
-          pointerEvents: 'none',
-        }}
-      >
-        🏖 חופשה
-      </div>
-    )
-  })
+  const h = totalSlots * RH - 4
+
+  useEffect(() => {
+    if (!ref.current) return
+    const grid = ref.current.closest('.cal-grid')
+    if (!grid) return
+
+    function update() {
+      if (!ref.current) return
+      const cell = grid.querySelector(`.slot[data-p="${provider.id}"]`)
+      if (!cell) return
+      const cr = cell.getBoundingClientRect()
+      const gr = grid.getBoundingClientRect()
+      ref.current.style.right = (gr.right - cr.right + 3) + 'px'
+      ref.current.style.width = (cr.width - 6) + 'px'
+    }
+
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(grid)
+    return () => ro.disconnect()
+  }, [provider.id])
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        position: 'absolute',
+        top: RH + 2,
+        right: 3,
+        width: 100,
+        height: h,
+        background: `${col}18`,
+        border: `2px dashed ${col}66`,
+        color: col,
+        borderRadius: 8,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: 13,
+        fontWeight: 700,
+        zIndex: 6,
+        pointerEvents: 'none',
+      }}
+    >
+      🏖 חופשה
+    </div>
+  )
 }
 
 function ApptBlock({ appt, openMins, providers, onClick }) {
@@ -145,12 +171,6 @@ function ApptBlock({ appt, openMins, providers, onClick }) {
   const h    = Math.max((appt.duration / 30) * RH - 5, 26)
   const endT = m2t(sm + appt.duration)
   const icon = siIcon(appt.service)
-
-  // Width/position are set via the grid — we overlay using absolute
-  // The actual column width is unknown at render — use a ResizeObserver approach
-  // For simplicity, we render inside the first slot cell via a portal-free trick:
-  // The component renders as absolute child of the grid, positioned using
-  // clientX of the first slot cell. This is done via an effect.
 
   useEffect(() => {
     if (!ref.current) return

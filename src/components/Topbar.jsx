@@ -1,5 +1,5 @@
 // ── Topbar.jsx ────────────────────────────────────────────────
-import { DAY_F, MONS, today } from '../lib/helpers'
+import { DAY_S, today } from '../lib/helpers'
 
 export default function Topbar({ settings, curDate, curView, onPrevDay, onNextDay, onSetView, onNewAppt, onOpenSettings }) {
   const d    = new Date(curDate + 'T12:00:00')
@@ -9,16 +9,15 @@ export default function Topbar({ settings, curDate, curView, onPrevDay, onNextDa
   return (
     <div className="topbar">
       <div className="logo" onClick={onOpenSettings}>
-        ✂<em>{name}</em>תור
+        ✂<em>{name}</em>
       </div>
       <div className="day-nav">
         <button className="nav-btn" onClick={onPrevDay}>›</button>
         <div className="day-lbl">
           <div className="day-lbl-main">
             {isT && <span className="today-chip">היום</span>}
-            יום {DAY_F[d.getDay()]}
+            יום {DAY_S[d.getDay()]}′
           </div>
-          <div className="day-lbl-sub">{d.getDate()} ב{MONS[d.getMonth()]}</div>
         </div>
         <button className="nav-btn" onClick={onNextDay}>‹</button>
       </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { today, t2m, m2t, PCOLS, hasConflict, isOnVacation } from '../lib/helpers'
 
-const DURATIONS = [30, 45, 60, 90, 120, 180]
+const DURATIONS = [15, 30, 45, 60, 90, 120, 180]
 
 export default function ApptModal({
   initial, providers, appointments, clients, settings, vacations,
@@ -160,12 +160,25 @@ export default function ApptModal({
         {/* Service */}
         <div className="fr">
           <label className="fl">שירות</label>
-          <input className="fi" value={service} onChange={e => setService(e.target.value)} placeholder="תספורת, צביעה, פן..." list="svcList" />
-          <datalist id="svcList">
-            {['תספורת','תספורת + פן','צביעה שורשים','צביעה מלאה','הארה','פן','מניקור','פדיקור','עיצוב גבות','הסרת שיער'].map(s => (
-              <option key={s} value={s} />
-            ))}
-          </datalist>
+          {settings.services?.length > 0 && (
+            <div className="pills" style={{ marginBottom: 7 }}>
+              {settings.services.map(s => (
+                <div
+                  key={s}
+                  className={`pill ${service === s ? 'active' : ''}`}
+                  onClick={() => setService(service === s ? '' : s)}
+                >
+                  {s}
+                </div>
+              ))}
+            </div>
+          )}
+          <input
+            className="fi"
+            value={service}
+            onChange={e => setService(e.target.value)}
+            placeholder={settings.services?.length > 0 ? 'או הקלד שירות אחר...' : 'תספורת, צביעה, פן...'}
+          />
         </div>
 
         {/* Date + Time */}
@@ -176,7 +189,7 @@ export default function ApptModal({
           </div>
           <div className="fr" style={{ margin: 0 }}>
             <label className="fl">שעה</label>
-            <input className="fi" type="time" step="900" value={time} onChange={e => setTime(e.target.value)} />
+            <input className="fi" type="time" step="600" value={time} onChange={e => setTime(e.target.value)} />
           </div>
         </div>
 
@@ -186,7 +199,7 @@ export default function ApptModal({
           <div className="pills">
             {DURATIONS.map(m => (
               <div key={m} className={`pill ${dur === m ? 'active' : ''}`} onClick={() => setDur(m)}>
-                {m < 60 ? `${m}′` : m === 60 ? `60′` : m === 90 ? `90′` : m === 120 ? `120′` : '3שע'}
+                {m < 60 ? `${m}′` : m === 60 ? `שעה` : m === 90 ? `ש׳וחצי` : m === 120 ? `2שע` : `3שע`}
               </div>
             ))}
           </div>

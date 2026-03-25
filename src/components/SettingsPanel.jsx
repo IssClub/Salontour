@@ -19,6 +19,8 @@ export default function SettingsPanel({
   const [defDur,     setDefDur]     = useState(settings.default_duration)
   const [workDays,   setWorkDays]   = useState([...(settings.work_days || [])])
   const [dayHours,   setDayHours]   = useState({ ...(settings.day_hours || {}) })
+  const [services,   setServices]   = useState(settings.services || [])
+  const [newSvc,     setNewSvc]     = useState('')
   const [pinBuf,     setPinBuf]     = useState('')
   const [pinStatus,  setPinStatus]  = useState(settings.pin ? '🔒 PIN מוגדר' : '🔓 אין PIN')
   const [showVacForm,setShowVacForm]= useState(false)
@@ -31,6 +33,13 @@ export default function SettingsPanel({
     setWorkDays(prev =>
       prev.includes(d) ? (prev.length > 1 ? prev.filter(x => x !== d) : prev) : [...prev, d]
     )
+  }
+
+  function addService() {
+    const t = newSvc.trim()
+    if (!t || services.includes(t)) return
+    setServices(prev => [...prev, t])
+    setNewSvc('')
   }
 
   async function handleSave() {
@@ -49,6 +58,7 @@ export default function SettingsPanel({
       default_duration: defDur,
       work_days: workDays,
       day_hours: dayHours,
+      services,
       pin: newPin,
     })
   }
@@ -168,11 +178,41 @@ export default function SettingsPanel({
         </div>
       </div>
 
+      {/* Services */}
+      <div className="fps">
+        <div className="fpst">✂ שירותים</div>
+        <div className="fpc">
+          {services.length === 0 && (
+            <div style={{ padding: '10px 14px', fontSize: 13, color: 'var(--text-dim)' }}>אין שירותים מוגדרים</div>
+          )}
+          {services.map(s => (
+            <div key={s} className="fpr">
+              <div className="fprl">{s}</div>
+              <button className="brm" onClick={() => setServices(prev => prev.filter(x => x !== s))}>✕</button>
+            </div>
+          ))}
+          <div className="fpr" style={{ gap: 8 }}>
+            <input
+              className="fi"
+              style={{ flex: 1, padding: '7px 10px', fontSize: 13 }}
+              value={newSvc}
+              onChange={e => setNewSvc(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && addService()}
+              placeholder="הוסף שירות... (Enter)"
+            />
+            <button
+              onClick={addService}
+              style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 8, padding: '7px 14px', fontFamily: 'Heebo', fontSize: 13, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}
+            >＋</button>
+          </div>
+        </div>
+      </div>
+
       {/* Providers */}
       <div className="fps">
         <div className="fpst">💇 מטפלים</div>
         <div className="fpc">
-          {providers.map((pv, idx) => (
+          {providers.map((pv) => (
             <div key={pv.id} className="pi">
               <div className="piav" style={{ background: PCOLS[pv.color] }}>{pv.name[0]}</div>
               <input
@@ -220,7 +260,7 @@ export default function SettingsPanel({
                 </div>
                 <div>
                   <div className="vi-name">{pv?.name || '—'}{v.note ? ` · ${v.note}` : ''}</div>
-                  <div className="vi-dates">{v.from_date} ← {v.to_date}</div>
+                  <div className="vi-dates">{v.from_date} → {v.to_date}</div>
                 </div>
                 <button className="brvac" onClick={() => onDeleteVacation(v.id)}>🗑</button>
               </div>
@@ -235,15 +275,32 @@ export default function SettingsPanel({
                   {providers.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </select>
               </div>
-              <div className="fg2">
-                <div className="fr" style={{ margin: 0 }}>
-                  <label className="fl">מתאריך</label>
-                  <input className="fi" type="date" value={vacFrom} onChange={e => setVacFrom(e.target.value)} />
+              <div className="fr">
+                <label className="fl">טווח חופשה</label>
+                <div className="vac-range">
+                  <input
+                    className="fi"
+                    type="date"
+                    value={vacFrom}
+                    onChange={e => {
+                      setVacFrom(e.target.value)
+                      if (!vacTo || e.target.value > vacTo) setVacTo(e.target.value)
+                    }}
+                  />
+                  <div className="vac-range-arrow">→</div>
+                  <input
+                    className="fi"
+                    type="date"
+                    value={vacTo}
+                    min={vacFrom}
+                    onChange={e => setVacTo(e.target.value)}
+                  />
                 </div>
-                <div className="fr" style={{ margin: 0 }}>
-                  <label className="fl">עד תאריך</label>
-                  <input className="fi" type="date" value={vacTo} onChange={e => setVacTo(e.target.value)} />
-                </div>
+                {vacFrom && vacTo && vacFrom !== vacTo && (
+                  <div style={{ fontSize: 11, color: 'var(--text-mid)', marginTop: 5 }}>
+                    {Math.round((new Date(vacTo) - new Date(vacFrom)) / 86400000) + 1} ימים
+                  </div>
+                )}
               </div>
               <div className="fr" style={{ marginTop: 8 }}>
                 <label className="fl">הערה</label>

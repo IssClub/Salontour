@@ -107,3 +107,4 @@ alter publication supabase_realtime add table clients;
 -- MIGRATION — run on existing databases
 -- ============================================================
 alter table settings add column if not exists pin text default null;
+alter table settings add column if not exists services text[] default '{}';

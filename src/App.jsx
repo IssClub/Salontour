@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { useData } from './hooks/useData'
 import { today, addDays } from './lib/helpers'
 
@@ -32,6 +32,8 @@ export default function App() {
     setToast(msg)
     setTimeout(() => setToast(''), 2800)
   }, [])
+
+  const swipeStartX = useRef(null)
 
   const openNewAppt = useCallback((providerId, date, time) => {
     setApptModal({ providerId, date: date || curDate, time: time || '' })
@@ -105,7 +107,20 @@ export default function App() {
         }}
       />
 
-      <div className="cal-outer" id="calOuter">
+      <div
+        className="cal-outer"
+        id="calOuter"
+        onTouchStart={e => { swipeStartX.current = e.touches[0].clientX }}
+        onTouchEnd={e => {
+          if (swipeStartX.current === null) return
+          const dx = e.changedTouches[0].clientX - swipeStartX.current
+          swipeStartX.current = null
+          if (Math.abs(dx) < 60) return
+          if (curView === 'day' || curView === 'free') {
+            dx < 0 ? setCurDate(d => addDays(d, 1)) : setCurDate(d => addDays(d, -1))
+          }
+        }}
+      >
         {curView === 'day' && (
           <DayView
             curDate={curDate}

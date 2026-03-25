@@ -12,8 +12,9 @@ const DEFAULT_SETTINGS = {
   work_days: [0,1,2,3,4],
   open_mins: 540,
   close_mins: 1200,
-  default_duration: 60,
+  default_duration: 15,
   day_hours: {},
+  services: [],
 }
 
 export function useData() {
@@ -108,6 +109,7 @@ export function useData() {
 
   const deleteAppointment = useCallback(async (id) => {
     const { error } = await supabase.from('appointments').delete().eq('id', id)
+    if (!error) setAppointments(prev => prev.filter(a => a.id !== id))
     return { error }
   }, [])
 
