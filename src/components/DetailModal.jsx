@@ -62,6 +62,3 @@ export function DetailModal({ apptId, appointments, providers, onClose, onEdit, 
 }
 
 export default DetailModal
-
-
-export default DetailModal
