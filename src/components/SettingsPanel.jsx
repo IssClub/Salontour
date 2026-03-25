@@ -87,7 +87,8 @@ const TIME_OPTS = buildTimeOptions()
 export default function SettingsPanel({
   settings, providers, vacations,
   onSave, onSaveProvider, onAddProvider, onDeleteProvider,
-  onAddVacation, onDeleteVacation, onClose
+  onAddVacation, onDeleteVacation, onClose,
+  onExport, onImport, onDeleteAll,
 }) {
   const [salonName,  setSalonName]  = useState(settings.salon_name || '')
   const [openMins,   setOpenMins]   = useState(settings.open_mins)
@@ -393,6 +394,48 @@ export default function SettingsPanel({
             <button className="key del" style={{ gridColumn: 3 }} onClick={() => setPinBuf(b => b.slice(0,-1))}>⌫</button>
           </div>
           <div style={{ padding: '0 14px 12px', fontSize: 11, color: 'var(--text-dim)' }}>{pinStatus}</div>
+        </div>
+      </div>
+
+      {/* Export / Import */}
+      <div className="fps">
+        <div className="fpst">💾 גיבוי ושחזור</div>
+        <div className="fpc">
+          <div className="fpr">
+            <div className="fprl">ייצוא נתונים</div>
+            <button
+              style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 8, padding: '7px 14px', fontFamily: 'Heebo', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+              onClick={onExport}
+            >📤 ייצוא JSON</button>
+          </div>
+          <div className="fpr">
+            <div className="fprl">ייבוא נתונים</div>
+            <label style={{ background: 'var(--bg)', border: '1.5px solid var(--border2)', borderRadius: 8, padding: '7px 14px', fontFamily: 'Heebo', fontSize: 13, fontWeight: 700, cursor: 'pointer', color: 'var(--text-mid)' }}>
+              📥 ייבוא JSON
+              <input type="file" accept=".json" style={{ display: 'none' }} onChange={e => { if (e.target.files[0]) onImport(e.target.files[0]); e.target.value = '' }} />
+            </label>
+          </div>
+        </div>
+      </div>
+
+      {/* Danger Zone */}
+      <div className="fps">
+        <div className="fpst" style={{ color: 'var(--red)' }}>⚠ אזור מסוכן</div>
+        <div className="fpc">
+          <div className="fpr">
+            <div>
+              <div className="fprl">מחיקת כל הנתונים</div>
+              <div className="fprs">תורים, לקוחות וחופשות — אין דרך חזרה</div>
+            </div>
+            <button
+              style={{ background: 'var(--red-bg)', color: 'var(--red)', border: '1px solid rgba(217,79,61,.3)', borderRadius: 8, padding: '7px 14px', fontFamily: 'Heebo', fontSize: 13, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}
+              onClick={() => {
+                if (window.confirm('האם אתה בטוח? כל התורים, הלקוחות והחופשות יימחקו לצמיתות מהשרת.')) {
+                  onDeleteAll()
+                }
+              }}
+            >🗑 מחק הכל</button>
+          </div>
         </div>
       </div>
 

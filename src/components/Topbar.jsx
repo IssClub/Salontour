@@ -12,14 +12,14 @@ export default function Topbar({ settings, curDate, curView, onPrevDay, onNextDa
         ✂<em>{name}</em>
       </div>
       <div className="day-nav">
-        <button className="nav-btn" onClick={onPrevDay}>›</button>
+        <button className="nav-btn" onClick={onPrevDay}>‹</button>
         <div className="day-lbl">
           <div className="day-lbl-main">
             {isT && <span className="today-chip">היום</span>}
             יום {DAY_S[d.getDay()]}
           </div>
         </div>
-        <button className="nav-btn" onClick={onNextDay}>‹</button>
+        <button className="nav-btn" onClick={onNextDay}>›</button>
       </div>
       <div className="topbar-right">
         <div className="view-toggle">

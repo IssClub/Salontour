@@ -25,7 +25,14 @@ export function DetailModal({ apptId, appointments, providers, onClose, onEdit, 
 
         <div className="dr">
           <div className="di">📞</div>
-          <div><div className="dv" style={{ direction: 'ltr' }}>{appt.phone || 'לא צוין'}</div><div className="dm">טלפון</div></div>
+          <div style={{ flex: 1 }}>
+            {ph
+              ? <a className="dv" href={`tel:${appt.phone}`} style={{ direction: 'ltr', color: 'var(--accent-txt)', textDecoration: 'none', display: 'block' }}>{appt.phone}</a>
+              : <div className="dv">לא צוין</div>
+            }
+            <div className="dm">טלפון</div>
+          </div>
+          {ph && <a className="bwa" href={`tel:${appt.phone}`} style={{ textDecoration: 'none', padding: '6px 12px', fontSize: 12 }}>📞 חייג</a>}
         </div>
         <div className="dr">
           <div className="di">🕐</div>

@@ -159,6 +159,12 @@ export function useData() {
   }, [])
 
   // ── Clients ───────────────────────────────────────────────
+  const deleteClient = useCallback(async (id) => {
+    const { error } = await supabase.from('clients').delete().eq('id', id)
+    if (!error) setClients(prev => prev.filter(c => c.id !== id))
+    return { error }
+  }, [])
+
   const upsertClient = useCallback(async (name, phone) => {
     const existing = clients.find(c => c.name.toLowerCase() === name.trim().toLowerCase())
     if (existing) {
@@ -175,13 +181,40 @@ export function useData() {
     }
   }, [clients])
 
+  const deleteAllData = useCallback(async () => {
+    await Promise.all([
+      supabase.from('appointments').delete().not('id', 'is', null),
+      supabase.from('clients').delete().not('id', 'is', null),
+      supabase.from('vacations').delete().not('id', 'is', null),
+    ])
+    setAppointments([])
+    setClients([])
+    setVacations([])
+  }, [])
+
+  const getExportData = useCallback(() => ({
+    version: 1,
+    exported_at: new Date().toISOString(),
+    settings, providers, clients, appointments, vacations,
+  }), [settings, providers, clients, appointments, vacations])
+
+  const importData = useCallback(async (json) => {
+    const ops = []
+    if (json.clients?.length)      ops.push(supabase.from('clients').upsert(json.clients,      { onConflict: 'id' }))
+    if (json.appointments?.length) ops.push(supabase.from('appointments').upsert(json.appointments, { onConflict: 'id' }))
+    if (json.vacations?.length)    ops.push(supabase.from('vacations').upsert(json.vacations,    { onConflict: 'id' }))
+    await Promise.all(ops)
+    await loadAll()
+  }, [])
+
   return {
     loading,
     settings, saveSettings,
     providers, saveProvider, addProvider, deleteProvider,
     appointments, saveAppointment, deleteAppointment,
-    clients, upsertClient,
+    clients, upsertClient, deleteClient,
     vacations, addVacation, deleteVacation,
+    deleteAllData, getExportData, importData,
     reload: loadAll,
   }
 }

@@ -227,6 +227,11 @@ export default function App() {
           clients={data.clients}
           onClose={() => setClientName(null)}
           onApptClick={(id) => { setClientName(null); setDetailId(id) }}
+          onDeleteClient={async (id) => {
+            const { error } = await data.deleteClient(id)
+            if (error) showToast('שגיאה במחיקה')
+            else showToast('הלקוח נמחק')
+          }}
         />
       )}
 
@@ -247,6 +252,28 @@ export default function App() {
           onAddVacation={data.addVacation}
           onDeleteVacation={data.deleteVacation}
           onClose={() => setSettingsOpen(false)}
+          onExport={() => {
+            const d = data.getExportData()
+            const blob = new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `salontour-${new Date().toISOString().slice(0,10)}.json`
+            document.body.appendChild(a); a.click()
+            document.body.removeChild(a); URL.revokeObjectURL(url)
+            showToast('הנתונים יוצאו ✓')
+          }}
+          onImport={async (file) => {
+            try {
+              const text = await file.text()
+              await data.importData(JSON.parse(text))
+              showToast('הנתונים יובאו ✓')
+            } catch { showToast('שגיאה בייבוא הקובץ') }
+          }}
+          onDeleteAll={async () => {
+            await data.deleteAllData()
+            showToast('כל הנתונים נמחקו')
+          }}
         />
       )}
 

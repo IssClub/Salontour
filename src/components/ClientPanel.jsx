@@ -1,6 +1,6 @@
 import { MONS } from '../lib/helpers'
 
-export default function ClientPanel({ name, appointments, providers, clients, onClose, onApptClick }) {
+export default function ClientPanel({ name, appointments, providers, clients, onClose, onApptClick, onDeleteClient }) {
   const cl     = clients.find(c => c.name.toLowerCase() === name.toLowerCase())
   const visits = appointments
     .filter(a => a.client_name.toLowerCase() === name.toLowerCase())
@@ -18,8 +18,23 @@ export default function ClientPanel({ name, appointments, providers, clients, on
         <div className="cc-av">{name[0]}</div>
         <div>
           <div className="cc-name">{name}</div>
-          <div className="cc-phone">{cl?.phone || 'אין טלפון'}</div>
+          {cl?.phone
+          ? <a className="cc-phone" href={`tel:${cl.phone}`}>📞 {cl.phone}</a>
+          : <div className="cc-phone">אין טלפון</div>
+        }
         </div>
+        {onDeleteClient && cl && (
+          <button
+            className="bd"
+            style={{ marginRight: 'auto', fontSize: 12, padding: '6px 12px' }}
+            onClick={() => {
+              if (window.confirm(`למחוק את הלקוח/ה ${name}?`)) {
+                onDeleteClient(cl.id)
+                onClose()
+              }
+            }}
+          >🗑 מחק לקוח</button>
+        )}
       </div>
 
       <div className="cc-stats">
