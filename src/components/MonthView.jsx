@@ -1,6 +1,6 @@
-import { today, DAY_S, MONS, PCOLS } from '../lib/helpers'
+import { today, DAY_S, MONS, PCOLS, isOnVacation } from '../lib/helpers'
 
-export default function MonthView({ curDate, curMonth, settings, providers, appointments, onPickDay }) {
+export default function MonthView({ curDate, curMonth, settings, providers, appointments, vacations, onPickDay }) {
   const base   = new Date(curMonth + 'T12:00:00')
   const year   = base.getFullYear()
   const month  = base.getMonth()
@@ -50,7 +50,10 @@ export default function MonthView({ curDate, curMonth, settings, providers, appo
               <div className="mday-dots">
                 {providers.map(p => {
                   const has = dayAppts.some(a => a.provider_id === p.id)
-                  return has ? <div key={p.id} className="mday-dot" style={{ background: PCOLS[p.color] }} /> : null
+                  const onVac = isOnVacation(vacations, p.id, c.ds)
+                  if (has) return <div key={p.id} className="mday-dot" style={{ background: PCOLS[p.color] }} />
+                  if (onVac) return <div key={p.id} className="mday-dot" style={{ background: PCOLS[p.color], opacity: 0.25 }} />
+                  return null
                 })}
               </div>
             </div>

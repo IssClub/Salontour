@@ -66,6 +66,7 @@ export default function App() {
       {pinLocked && (
         <PinLock
           pin={data.settings.pin}
+          salonName={data.settings.salon_name}
           onUnlock={() => {
             localStorage.setItem('salon_pin_unlocked', 'true')
             // force re-render
@@ -175,6 +176,7 @@ export default function App() {
             settings={data.settings}
             providers={data.providers}
             appointments={data.appointments}
+            vacations={data.vacations}
             onPickDay={(ds) => { setCurDate(ds); setCurView('day') }}
           />
         )}

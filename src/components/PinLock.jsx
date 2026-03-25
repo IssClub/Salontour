@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { hashPin } from '../lib/helpers'
 
-export default function PinLock({ pin, onUnlock }) {
+export default function PinLock({ pin, onUnlock, salonName }) {
   const [buf, setBuf] = useState('')
   const [err, setErr] = useState('')
 
@@ -20,7 +20,7 @@ export default function PinLock({ pin, onUnlock }) {
 
   return (
     <div className="lock" style={{ animation: err ? 'shake .4s ease' : undefined }}>
-      <div className="lk-logo">✂<span style={{ fontWeight: 300, color: 'var(--text-mid)' }}>סלון</span>תור</div>
+      <div className="lk-logo">✂<span style={{ fontWeight: 300, color: 'var(--text-mid)' }}>{salonName || 'סלון'}</span>תור</div>
       <div className="lk-sub">הזן קוד גישה</div>
       <div className="pdots">
         {[0, 1, 2, 3].map(i => <div key={i} className={`pdot ${i < buf.length ? 'on' : ''}`} />)}

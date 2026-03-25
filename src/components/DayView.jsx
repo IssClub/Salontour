@@ -70,7 +70,7 @@ export default function DayView({ curDate, settings, providers, appointments, va
         const isH = m % 60 === 0
         return [
           <div key={`tl-${m}`} className={`t-label${isH ? '' : ' half'}`}>
-            {isH ? m2t(m) : ''}
+            {isH && m === open ? m2t(m) : (!isH && m + 30 <= close ? m2t(m + 30) : '')}
           </div>,
           ...providers.map(p => {
             const onVac = isOnVacation(vacations, p.id, curDate)
