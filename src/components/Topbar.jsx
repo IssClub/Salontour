@@ -16,7 +16,7 @@ export default function Topbar({ settings, curDate, curView, onPrevDay, onNextDa
         <div className="day-lbl">
           <div className="day-lbl-main">
             {isT && <span className="today-chip">היום</span>}
-            יום {DAY_S[d.getDay()]}′
+            יום {DAY_S[d.getDay()]}'
           </div>
         </div>
         <button className="nav-btn" onClick={onNextDay}>‹</button>

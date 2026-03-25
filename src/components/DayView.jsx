@@ -72,15 +72,21 @@ export default function DayView({ curDate, settings, providers, appointments, va
           <div key={`tl-${m}`} className={`t-label${isH ? '' : ' half'}`}>
             {isH ? m2t(m) : ''}
           </div>,
-          ...providers.map(p => (
-            <div
-              key={`slot-${m}-${p.id}`}
-              data-p={p.id}
-              className={`slot${isH ? '' : ' half'}`}
-              style={{ background: PLIGHT(p.color) }}
-              onClick={() => onSlotClick(p.id, curDate, m2t(m))}
-            />
-          ))
+          ...providers.map(p => {
+            const onVac = isOnVacation(vacations, p.id, curDate)
+            return (
+              <div
+                key={`slot-${m}-${p.id}`}
+                data-p={p.id}
+                className={`slot${isH ? '' : ' half'}`}
+                style={{
+                  background: PLIGHT(p.color),
+                  cursor: onVac ? 'not-allowed' : 'pointer',
+                }}
+                onClick={() => !onVac && onSlotClick(p.id, curDate, m2t(m))}
+              />
+            )
+          })
         ]
       })}
 
