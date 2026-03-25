@@ -236,16 +236,28 @@ export default function App() {
             showToast('התור נמחק')
           }}
           onConfirm={async (id) => {
+            const appt = data.appointments.find(a => a.id === id)
             const { error } = await data.confirmAppointment(id)
             if (error) { showToast('שגיאה בעדכון'); return }
             showToast('התור אושר ✓')
+            if (appt?.phone) {
+              const ph  = appt.phone.replace(/\D/g, '').replace(/^0/, '')
+              const msg = encodeURIComponent(`שלום ${appt.client_name} 😊\nתורך אושר!\n📅 ${appt.date} בשעה ${appt.time.slice(0,5)}\n✂ ${appt.service || 'טיפול'}\nמחכים לך!`)
+              window.open(`https://wa.me/972${ph}?text=${msg}`, '_blank')
+            }
           }}
           onReject={async (id) => {
             if (!window.confirm('לדחות ולמחוק את הבקשה?')) return
+            const appt = data.appointments.find(a => a.id === id)
             const { error } = await data.rejectAppointment(id)
             if (error) { showToast('שגיאה במחיקה'); return }
             setDetailId(null)
             showToast('הבקשה נדחתה')
+            if (appt?.phone) {
+              const ph  = appt.phone.replace(/\D/g, '').replace(/^0/, '')
+              const msg = encodeURIComponent(`שלום ${appt.client_name},\nמצטערים, לא הצלחנו לאשר את בקשת התור שלך לתאריך ${appt.date}.\nאנא צור/י קשר עם המספרה לקביעת תור טלפוני 📞`)
+              window.open(`https://wa.me/972${ph}?text=${msg}`, '_blank')
+            }
           }}
           onClientCard={(name) => { setDetailId(null); setClientName(name) }}
         />
