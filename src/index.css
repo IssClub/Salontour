@@ -278,5 +278,16 @@ html, body, #root {
 
 @media(max-width:520px) {
   :root { --rh: 44px; }
-  .ch-prov, .slot { min-width: 115px; }
+  .cal-grid { min-width: 100%; }
+  .ch-prov, .slot { min-width: 0; }
+}
+
+@media(min-width: 768px) {
+  .app-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    box-shadow: 0 0 40px rgba(0,0,0,.07);
+  }
 }
