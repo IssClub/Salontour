@@ -121,6 +121,18 @@ export default function App() {
         }}
       />
 
+      {/* Pending appointments banner */}
+      {(() => {
+        const pending = data.appointments.filter(a => a.status === 'pending')
+        return pending.length > 0 ? (
+          <div className="reminder-banner" style={{ background: 'var(--amber-bg)', borderColor: 'var(--amber)' }}>
+            <span style={{ color: 'var(--amber)', fontWeight: 700, fontSize: 13 }}>
+              ⏳ {pending.length} {pending.length === 1 ? 'תור ממתין' : 'תורים ממתינים'} לאישור
+            </span>
+          </div>
+        ) : null
+      })()}
+
       {/* WhatsApp reminder banner */}
       {!reminderDismissed && data.appointments.some(a => a.date === tomorrow) && (
         <div className="reminder-banner">
@@ -217,6 +229,18 @@ export default function App() {
             setDetailId(null)
             showToast('התור נמחק')
           }}
+          onConfirm={async (id) => {
+            const { error } = await data.confirmAppointment(id)
+            if (error) { showToast('שגיאה בעדכון'); return }
+            showToast('התור אושר ✓')
+          }}
+          onReject={async (id) => {
+            if (!window.confirm('לדחות ולמחוק את הבקשה?')) return
+            const { error } = await data.rejectAppointment(id)
+            if (error) { showToast('שגיאה במחיקה'); return }
+            setDetailId(null)
+            showToast('הבקשה נדחתה')
+          }}
           onClientCard={(name) => { setDetailId(null); setClientName(name) }}
         />
       )}
@@ -233,6 +257,11 @@ export default function App() {
             const { error } = await data.deleteClient(id)
             if (error) showToast('שגיאה במחיקה')
             else showToast('הלקוח נמחק')
+          }}
+          onUpdateClient={async (id, updates) => {
+            const { error } = await data.updateClient(id, updates)
+            if (error) showToast('שגיאה בעדכון')
+            else showToast('הלקוח עודכן ✓')
           }}
         />
       )}

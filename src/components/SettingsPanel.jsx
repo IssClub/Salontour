@@ -397,6 +397,27 @@ export default function SettingsPanel({
         </div>
       </div>
 
+      {/* Booking link */}
+      <div className="fps">
+        <div className="fpst">📲 הזמנה עצמאית (QR)</div>
+        <div className="fpc">
+          <div className="fpr" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 6 }}>
+            <div className="fprl">קישור לדף ההזמנה ללקוחות</div>
+            <div className="fprs" style={{ direction: 'ltr', fontSize: 12, wordBreak: 'break-all' }}>
+              https://issclub.github.io/SalontourBook/
+            </div>
+          </div>
+          <button
+            style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 8, padding: '7px 14px', fontFamily: 'Heebo', fontSize: 13, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}
+            onClick={() => {
+              navigator.clipboard.writeText('https://issclub.github.io/SalontourBook/')
+                .then(() => alert('הקישור הועתק!'))
+                .catch(() => alert('https://issclub.github.io/SalontourBook/'))
+            }}
+          >📋 העתק קישור</button>
+        </div>
+      </div>
+
       {/* Export / Import */}
       <div className="fps">
         <div className="fpst">💾 גיבוי ושחזור</div>

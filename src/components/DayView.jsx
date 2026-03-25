@@ -169,14 +169,15 @@ function VacationOverlay({ provider, open, close }) {
 }
 
 function ApptBlock({ appt, openMins, providers, onClick }) {
-  const ref = useRef(null)
-  const prov = providers.find(p => p.id === appt.provider_id)
-  const col  = PCOLS[prov?.color || '1']
-  const sm   = t2m(appt.time)
-  const top  = RH + ((sm - openMins) / 30) * RH + 2
-  const h    = Math.max((appt.duration / 30) * RH - 5, 26)
-  const endT = m2t(sm + appt.duration)
-  const icon = siIcon(appt.service)
+  const ref     = useRef(null)
+  const prov    = providers.find(p => p.id === appt.provider_id)
+  const col     = PCOLS[prov?.color || '1']
+  const sm      = t2m(appt.time)
+  const top     = RH + ((sm - openMins) / 30) * RH + 2
+  const h       = Math.max((appt.duration / 30) * RH - 5, 26)
+  const endT    = m2t(sm + appt.duration)
+  const icon    = siIcon(appt.service)
+  const pending = appt.status === 'pending'
 
   useEffect(() => {
     if (!ref.current) return
@@ -203,11 +204,11 @@ function ApptBlock({ appt, openMins, providers, onClick }) {
     <div
       ref={ref}
       className="appt"
-      style={{ top, height: h, borderColor: col, position: 'absolute', right: 3, width: 140 }}
+      style={{ top, height: h, borderColor: col, position: 'absolute', right: 3, width: 140, opacity: pending ? 0.8 : 1, borderStyle: pending ? 'dashed' : 'solid' }}
       onClick={e => { e.stopPropagation(); onClick() }}
     >
       <div className="appt-top">
-        <span className="appt-icon">{icon}</span>
+        <span className="appt-icon">{pending ? '⏳' : icon}</span>
         <div className="appt-name">{appt.client_name}</div>
       </div>
       {h > 42 && <div className="appt-svc" style={{ color: col }}>{appt.service}</div>}

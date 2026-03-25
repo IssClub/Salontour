@@ -113,6 +113,20 @@ export function useData() {
     return { error }
   }, [])
 
+  const confirmAppointment = useCallback(async (id) => {
+    const { error } = await supabase.from('appointments')
+      .update({ status: 'confirmed', updated_at: new Date().toISOString() })
+      .eq('id', id)
+    if (!error) setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: 'confirmed' } : a))
+    return { error }
+  }, [])
+
+  const rejectAppointment = useCallback(async (id) => {
+    const { error } = await supabase.from('appointments').delete().eq('id', id)
+    if (!error) setAppointments(prev => prev.filter(a => a.id !== id))
+    return { error }
+  }, [])
+
   // ── Settings ──────────────────────────────────────────────
   const saveSettings = useCallback(async (newSettings) => {
     const { error } = await supabase.from('settings')
@@ -165,6 +179,12 @@ export function useData() {
     return { error }
   }, [])
 
+  const updateClient = useCallback(async (id, updates) => {
+    const { error } = await supabase.from('clients').update(updates).eq('id', id)
+    if (!error) setClients(prev => prev.map(c => c.id === id ? { ...c, ...updates } : c))
+    return { error }
+  }, [])
+
   const upsertClient = useCallback(async (name, phone) => {
     const existing = clients.find(c => c.name.toLowerCase() === name.trim().toLowerCase())
     if (existing) {
@@ -211,8 +231,8 @@ export function useData() {
     loading,
     settings, saveSettings,
     providers, saveProvider, addProvider, deleteProvider,
-    appointments, saveAppointment, deleteAppointment,
-    clients, upsertClient, deleteClient,
+    appointments, saveAppointment, deleteAppointment, confirmAppointment, rejectAppointment,
+    clients, upsertClient, deleteClient, updateClient,
     vacations, addVacation, deleteVacation,
     deleteAllData, getExportData, importData,
     reload: loadAll,

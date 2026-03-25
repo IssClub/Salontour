@@ -1,15 +1,16 @@
 // ── DetailModal.jsx ───────────────────────────────────────────
-import { t2m, m2t, PCOLS, siIcon, MONS } from '../lib/helpers'
+import { t2m, m2t, PCOLS, siIcon } from '../lib/helpers'
 
-export function DetailModal({ apptId, appointments, providers, onClose, onEdit, onDelete, onClientCard }) {
+export function DetailModal({ apptId, appointments, providers, onClose, onEdit, onDelete, onClientCard, onConfirm, onReject }) {
   const appt = appointments.find(a => a.id === apptId)
   if (!appt) return null
 
-  const prov = providers.find(p => p.id === appt.provider_id)
-  const col  = PCOLS[prov?.color || '1']
-  const endT = m2t(t2m(appt.time) + appt.duration)
-  const ph   = (appt.phone || '').replace(/\D/g, '')
-  const msg  = encodeURIComponent(`שלום ${appt.client_name}, תזכורת לתורך ב-${appt.time.slice(0,5)} לשירות ${appt.service} 💇`)
+  const prov    = providers.find(p => p.id === appt.provider_id)
+  const col     = PCOLS[prov?.color || '1']
+  const endT    = m2t(t2m(appt.time) + appt.duration)
+  const ph      = (appt.phone || '').replace(/\D/g, '')
+  const msg     = encodeURIComponent(`שלום ${appt.client_name}, תזכורת לתורך ב-${appt.time.slice(0,5)} לשירות ${appt.service} 💇`)
+  const pending = appt.status === 'pending'
 
   return (
     <div className="overlay open" onClick={e => e.target === e.currentTarget && onClose()}>
@@ -17,11 +18,29 @@ export function DetailModal({ apptId, appointments, providers, onClose, onEdit, 
         <div className="sh-handle" />
         <div className="dt-hdr">
           <div className="dt-av" style={{ background: `${col}22` }}>{siIcon(appt.service)}</div>
-          <div>
+          <div style={{ flex: 1 }}>
             <div className="dt-name">{appt.client_name}</div>
             <div className="dt-svc">{appt.service || 'שירות לא צוין'}</div>
           </div>
+          {pending && (
+            <div style={{ background: 'var(--amber-bg)', color: 'var(--amber)', border: '1px solid var(--amber)', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
+              ⏳ ממתין לאישור
+            </div>
+          )}
         </div>
+
+        {pending && (
+          <div style={{ display: 'flex', gap: 8, padding: '10px 16px', borderBottom: '1px solid var(--border)' }}>
+            <button
+              onClick={() => onConfirm && onConfirm(apptId)}
+              style={{ flex: 1, background: '#2d8a4e', color: '#fff', border: 'none', borderRadius: 10, padding: '10px 0', fontFamily: 'Heebo', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
+            >✓ אשר תור</button>
+            <button
+              onClick={() => onReject && onReject(apptId)}
+              style={{ flex: 1, background: 'var(--red-bg)', color: 'var(--red)', border: '1px solid rgba(217,79,61,.3)', borderRadius: 10, padding: '10px 0', fontFamily: 'Heebo', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
+            >✕ דחה תור</button>
+          </div>
+        )}
 
         <div className="dr">
           <div className="di">📞</div>
