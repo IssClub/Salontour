@@ -85,10 +85,22 @@ html, body, #root {
 .dpill.today.active .dp-num,
 .dpill.today.active .dp-dow { color: #fff; }
 
-/* Vacation range picker */
-.vac-range { display: flex; align-items: center; gap: 6px; }
-.vac-range .fi { flex: 1; }
-.vac-range-arrow { color: var(--accent); font-size: 16px; font-weight: 700; flex-shrink: 0; }
+/* Vacation calendar range picker */
+.vac-cal { background: var(--bg); border: 1.5px solid var(--border2); border-radius: 10px; overflow: hidden; }
+.vac-cal-hdr { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.vac-cal-dow { display: grid; grid-template-columns: repeat(7,1fr); background: var(--surface2); }
+.vac-cal-dow > div { text-align: center; font-size: 10px; font-weight: 700; color: var(--text-dim); padding: 5px 0; }
+.vac-cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; padding: 6px; }
+.vac-cal-day { text-align: center; padding: 6px 2px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-mid); transition: all .12s; }
+.vac-cal-day:hover:not(.other) { background: var(--accent-dim); color: var(--accent-txt); }
+.vac-cal-day.other { color: var(--text-dim); opacity: .3; cursor: default; }
+.vac-cal-day.vcf, .vac-cal-day.vct { background: var(--accent); color: #fff; border-radius: 6px; }
+.vac-cal-day.vcr { background: var(--accent-dim); color: var(--accent-txt); border-radius: 0; }
+.vac-cal-info { padding: 7px 12px; font-size: 11px; color: var(--text-mid); border-top: 1px solid var(--border); min-height: 30px; }
+
+/* Client list */
+.cl-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background .1s; }
+.cl-row:hover { background: var(--bg); }
 
 /* ── APP LAYOUT ── */
 .app-wrap { height: 100svh; display: flex; flex-direction: column; overflow: hidden; }

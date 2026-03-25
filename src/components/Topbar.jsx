@@ -1,7 +1,7 @@
 // ── Topbar.jsx ────────────────────────────────────────────────
 import { DAY_S, today } from '../lib/helpers'
 
-export default function Topbar({ settings, curDate, curView, onPrevDay, onNextDay, onSetView, onNewAppt, onOpenSettings }) {
+export default function Topbar({ settings, curDate, curView, onPrevDay, onNextDay, onSetView, onNewAppt, onOpenSettings, onOpenClients, onOpenReminders }) {
   const d    = new Date(curDate + 'T12:00:00')
   const isT  = curDate === today()
   const name = settings.salon_name || 'סלון'
@@ -33,6 +33,8 @@ export default function Topbar({ settings, curDate, curView, onPrevDay, onNextDa
             </button>
           ))}
         </div>
+        <button className="icon-btn" onClick={onOpenReminders} title="תזכורות WhatsApp">💬</button>
+        <button className="icon-btn" onClick={onOpenClients} title="לקוחות">👥</button>
         <button className="icon-btn" onClick={onOpenSettings} title="הגדרות">⚙</button>
         <button className="add-btn" onClick={onNewAppt}>✂<span className="btn-label"> תור</span></button>
       </div>

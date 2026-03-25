@@ -1,5 +1,81 @@
 import { useState } from 'react'
-import { m2t, DAY_F, PCOLS, CKEYS, hashPin } from '../lib/helpers'
+import { m2t, DAY_F, PCOLS, CKEYS, MONS, hashPin } from '../lib/helpers'
+
+function VacRangePicker({ from, to, onChange }) {
+  const base = from ? new Date(from + 'T12:00:00') : new Date()
+  const [viewYear,  setViewYear]  = useState(base.getFullYear())
+  const [viewMonth, setViewMonth] = useState(base.getMonth())
+  const [step, setStep] = useState(from ? 'to' : 'from') // 'from' | 'to'
+
+  function prevMonth() {
+    if (viewMonth === 0) { setViewYear(y => y - 1); setViewMonth(11) }
+    else setViewMonth(m => m - 1)
+  }
+  function nextMonth() {
+    if (viewMonth === 11) { setViewYear(y => y + 1); setViewMonth(0) }
+    else setViewMonth(m => m + 1)
+  }
+
+  function handleDay(ds) {
+    if (step === 'from' || !from) {
+      onChange(ds, '')
+      setStep('to')
+    } else {
+      if (ds >= from) { onChange(from, ds) }
+      else             { onChange(ds, from) }
+      setStep('from')
+    }
+  }
+
+  const firstDow    = new Date(viewYear, viewMonth, 1).getDay()
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate()
+  const prevDays    = new Date(viewYear, viewMonth, 0).getDate()
+  const cells = []
+  for (let i = firstDow - 1; i >= 0; i--)
+    cells.push({ dom: prevDays - i, ds: null })
+  for (let d = 1; d <= daysInMonth; d++) {
+    const ds = `${viewYear}-${String(viewMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`
+    cells.push({ dom: d, ds })
+  }
+  const total = Math.ceil((firstDow + daysInMonth) / 7) * 7
+  for (let i = 1; i <= total - firstDow - daysInMonth; i++)
+    cells.push({ dom: i, ds: null })
+
+  const days = Math.round((new Date(to) - new Date(from)) / 86400000) + 1
+
+  return (
+    <div className="vac-cal">
+      <div className="vac-cal-hdr">
+        <button type="button" className="nav-btn" onClick={prevMonth}>›</button>
+        <span style={{ fontWeight: 700, fontSize: 13 }}>{MONS[viewMonth]} {viewYear}</span>
+        <button type="button" className="nav-btn" onClick={nextMonth}>‹</button>
+      </div>
+      <div className="vac-cal-dow">
+        {['א','ב','ג','ד','ה','ו','ש'].map(d => <div key={d}>{d}</div>)}
+      </div>
+      <div className="vac-cal-grid">
+        {cells.map((c, i) => {
+          if (!c.ds) return <div key={i} className="vac-cal-day other" />
+          const isFrom    = c.ds === from
+          const isTo      = c.ds === to
+          const inRange   = from && to && c.ds > from && c.ds < to
+          return (
+            <div
+              key={c.ds}
+              className={`vac-cal-day${isFrom ? ' vcf' : ''}${isTo ? ' vct' : ''}${inRange ? ' vcr' : ''}`}
+              onClick={() => handleDay(c.ds)}
+            >{c.dom}</div>
+          )
+        })}
+      </div>
+      <div className="vac-cal-info">
+        {!from && '🗓 בחר תאריך התחלה'}
+        {from && !to && step === 'to' && '🗓 בחר תאריך סיום'}
+        {from && to && `📅 ${days} ${days === 1 ? 'יום' : 'ימים'} · ${from} → ${to}`}
+      </div>
+    </div>
+  )
+}
 
 function buildTimeOptions() {
   const opts = []
@@ -277,30 +353,11 @@ export default function SettingsPanel({
               </div>
               <div className="fr">
                 <label className="fl">טווח חופשה</label>
-                <div className="vac-range">
-                  <input
-                    className="fi"
-                    type="date"
-                    value={vacFrom}
-                    onChange={e => {
-                      setVacFrom(e.target.value)
-                      if (!vacTo || e.target.value > vacTo) setVacTo(e.target.value)
-                    }}
-                  />
-                  <div className="vac-range-arrow">→</div>
-                  <input
-                    className="fi"
-                    type="date"
-                    value={vacTo}
-                    min={vacFrom}
-                    onChange={e => setVacTo(e.target.value)}
-                  />
-                </div>
-                {vacFrom && vacTo && vacFrom !== vacTo && (
-                  <div style={{ fontSize: 11, color: 'var(--text-mid)', marginTop: 5 }}>
-                    {Math.round((new Date(vacTo) - new Date(vacFrom)) / 86400000) + 1} ימים
-                  </div>
-                )}
+                <VacRangePicker
+                  from={vacFrom}
+                  to={vacTo}
+                  onChange={(f, t) => { setVacFrom(f); setVacTo(t) }}
+                />
               </div>
               <div className="fr" style={{ marginTop: 8 }}>
                 <label className="fl">הערה</label>

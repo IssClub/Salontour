@@ -13,7 +13,8 @@ import ClientPanel   from './components/ClientPanel'
 import SettingsPanel from './components/SettingsPanel'
 import PinLock        from './components/PinLock'
 import Toast          from './components/Toast'
-import ReminderPanel  from './components/ReminderPanel'
+import ReminderPanel      from './components/ReminderPanel'
+import ClientsListPanel   from './components/ClientsListPanel'
 
 export default function App() {
   const data = useData()
@@ -42,7 +43,8 @@ export default function App() {
   const [reminderDismissed, setReminderDismissed] = useState(
     () => localStorage.getItem(reminderKey) === 'true'
   )
-  const [reminderOpen, setReminderOpen] = useState(false)
+  const [reminderOpen,    setReminderOpen]    = useState(false)
+  const [clientsListOpen, setClientsListOpen] = useState(false)
 
   const openNewAppt = useCallback((providerId, date, time) => {
     setApptModal({ providerId, date: date || curDate, time: time || '' })
@@ -81,6 +83,8 @@ export default function App() {
         onSetView={setCurView}
         onNewAppt={() => openNewAppt()}
         onOpenSettings={() => setSettingsOpen(true)}
+        onOpenClients={() => setClientsListOpen(true)}
+        onOpenReminders={() => setReminderOpen(true)}
       />
 
       <DateStrip
@@ -243,6 +247,15 @@ export default function App() {
           onAddVacation={data.addVacation}
           onDeleteVacation={data.deleteVacation}
           onClose={() => setSettingsOpen(false)}
+        />
+      )}
+
+      {clientsListOpen && (
+        <ClientsListPanel
+          clients={data.clients}
+          appointments={data.appointments}
+          onClose={() => setClientsListOpen(false)}
+          onSelectClient={(name) => { setClientsListOpen(false); setClientName(name) }}
         />
       )}
 
