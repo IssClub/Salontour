@@ -35,7 +35,7 @@ export default function Topbar({ settings, curDate, curView, onPrevDay, onNextDa
           ))}
         </div>
         <button className="icon-btn" onClick={onOpenSettings} title="הגדרות">⚙</button>
-        <button className="add-btn" onClick={onNewAppt}>✂ תור</button>
+        <button className="add-btn" onClick={onNewAppt}>✂<span className="btn-label"> תור</span></button>
       </div>
     </div>
   )

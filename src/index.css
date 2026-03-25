@@ -78,6 +78,12 @@ html, body, #root {
 .dpill.active .dp-num, .dpill.active .dp-dow { color: var(--accent-txt); }
 .dp-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); margin-top: 3px; opacity: 0; }
 .dpill.has-appts .dp-dot { opacity: 1; }
+.dpill.today { background: var(--accent-dim); border-color: var(--accent); }
+.dpill.today .dp-num { color: var(--accent-txt); font-weight: 900; }
+.dpill.today .dp-dow { color: var(--accent); }
+.dpill.today.active { background: var(--accent); }
+.dpill.today.active .dp-num,
+.dpill.today.active .dp-dow { color: #fff; }
 
 /* ── APP LAYOUT ── */
 .app-wrap { height: 100svh; display: flex; flex-direction: column; overflow: hidden; }
@@ -280,5 +286,8 @@ html, body, #root {
   :root { --rh: 44px; }
   .cal-grid { min-width: 100%; }
   .ch-prov, .slot { min-width: 0; }
+  .icon-btn { display: none; }
+  .btn-label { display: none; }
+  .day-lbl { min-width: 80px; }
 }
 

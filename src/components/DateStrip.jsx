@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { DAY_S, MONS, today, addDays } from '../lib/helpers'
+import { DAY_S, MONS, today as todayFn, addDays } from '../lib/helpers'
 
 export default function DateStrip({
   curDate, curView, curMonth,
@@ -32,6 +32,8 @@ export default function DateStrip({
   const weekStart = new Date(base)
   weekStart.setDate(base.getDate() - base.getDay())
 
+  const todayStr = todayFn()
+
   const days = Array.from({ length: 7 }, (_, i) => {
     const d  = new Date(weekStart)
     d.setDate(d.getDate() + i)
@@ -50,7 +52,7 @@ export default function DateStrip({
           return (
             <div
               key={ds}
-              className={`dpill ${ds === curDate ? 'active' : ''} ${has ? 'has-appts' : ''} ${isWork ? '' : 'off'}`}
+              className={`dpill ${ds === curDate ? 'active' : ''} ${ds === todayStr ? 'today' : ''} ${has ? 'has-appts' : ''} ${isWork ? '' : 'off'}`}
               onClick={() => onSelectDate(ds)}
             >
               <div className="dp-dow">{DAY_S[dow]}</div>
