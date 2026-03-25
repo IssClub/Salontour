@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(ls -la \"/c/Alon/Claude/Salontour/{src/\")"
+      "Bash(ls -la \"/c/Alon/Claude/Salontour/{src/\")",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }

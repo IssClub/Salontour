@@ -11,8 +11,9 @@ import ApptModal     from './components/ApptModal'
 import DetailModal   from './components/DetailModal'
 import ClientPanel   from './components/ClientPanel'
 import SettingsPanel from './components/SettingsPanel'
-import PinLock       from './components/PinLock'
-import Toast         from './components/Toast'
+import PinLock        from './components/PinLock'
+import Toast          from './components/Toast'
+import ReminderPanel  from './components/ReminderPanel'
 
 export default function App() {
   const data = useData()
@@ -34,6 +35,14 @@ export default function App() {
   }, [])
 
   const swipeStartX = useRef(null)
+
+  // WhatsApp reminders
+  const tomorrow      = addDays(today(), 1)
+  const reminderKey   = `reminder_dismissed_${tomorrow}`
+  const [reminderDismissed, setReminderDismissed] = useState(
+    () => localStorage.getItem(reminderKey) === 'true'
+  )
+  const [reminderOpen, setReminderOpen] = useState(false)
 
   const openNewAppt = useCallback((providerId, date, time) => {
     setApptModal({ providerId, date: date || curDate, time: time || '' })
@@ -106,6 +115,19 @@ export default function App() {
           setCurDate(d.toISOString().slice(0, 10))
         }}
       />
+
+      {/* WhatsApp reminder banner */}
+      {!reminderDismissed && data.appointments.some(a => a.date === tomorrow) && (
+        <div className="reminder-banner">
+          <button onClick={() => setReminderOpen(true)}>
+            💬 יש תורים מחר — שלח תזכורות WhatsApp
+          </button>
+          <button className="rem-dismiss" onClick={() => {
+            localStorage.setItem(reminderKey, 'true')
+            setReminderDismissed(true)
+          }}>✕</button>
+        </div>
+      )}
 
       <div
         className="cal-outer"
@@ -221,6 +243,16 @@ export default function App() {
           onAddVacation={data.addVacation}
           onDeleteVacation={data.deleteVacation}
           onClose={() => setSettingsOpen(false)}
+        />
+      )}
+
+      {reminderOpen && (
+        <ReminderPanel
+          appointments={data.appointments}
+          providers={data.providers}
+          settings={data.settings}
+          targetDate={tomorrow}
+          onClose={() => setReminderOpen(false)}
         />
       )}
 
