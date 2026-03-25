@@ -4,7 +4,9 @@ import { DAY_S, MONS, today, addDays } from '../lib/helpers'
 export default function DateStrip({
   curDate, curView, curMonth,
   appointments, settings,
-  onSelectDate, onPrevWeek, onNextWeek, onPrevMonth, onNextMonth
+  onSelectDate, onPrevWeek, onNextWeek,
+  onPrevMonth, onNextMonth,
+  onPrevMonthJump, onNextMonthJump,
 }) {
   const ref = useRef(null)
 
@@ -26,7 +28,7 @@ export default function DateStrip({
   }
 
   // Week strip
-  const base    = new Date(curDate + 'T12:00:00')
+  const base      = new Date(curDate + 'T12:00:00')
   const weekStart = new Date(base)
   weekStart.setDate(base.getDate() - base.getDay())
 
@@ -39,23 +41,27 @@ export default function DateStrip({
 
   return (
     <div className="strip" ref={ref}>
-      <button className="nav-btn" style={{ flexShrink: 0 }} onClick={onPrevWeek} title="שבוע קודם">‹‹</button>
-      {days.map(({ d, ds, dow }) => {
-        const isWork = settings.work_days?.includes(dow)
-        const has    = appointments.some(a => a.date === ds)
-        return (
-          <div
-            key={ds}
-            className={`dpill ${ds === curDate ? 'active' : ''} ${has ? 'has-appts' : ''} ${isWork ? '' : 'off'}`}
-            onClick={() => onSelectDate(ds)}
-          >
-            <div className="dp-dow">{DAY_S[dow]}</div>
-            <div className="dp-num">{d.getDate()}</div>
-            <div className="dp-dot" />
-          </div>
-        )
-      })}
-      <button className="nav-btn" style={{ flexShrink: 0 }} onClick={onNextWeek} title="שבוע הבא">››</button>
+      <button className="nav-btn" style={{ flexShrink: 0 }} onClick={onPrevMonthJump} title="חודש קודם">«</button>
+      <button className="nav-btn" style={{ flexShrink: 0 }} onClick={onPrevWeek} title="שבוע קודם">‹</button>
+      <div style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '2px' }}>
+        {days.map(({ d, ds, dow }) => {
+          const isWork = settings.work_days?.includes(dow)
+          const has    = appointments.some(a => a.date === ds)
+          return (
+            <div
+              key={ds}
+              className={`dpill ${ds === curDate ? 'active' : ''} ${has ? 'has-appts' : ''} ${isWork ? '' : 'off'}`}
+              onClick={() => onSelectDate(ds)}
+            >
+              <div className="dp-dow">{DAY_S[dow]}</div>
+              <div className="dp-num">{d.getDate()}</div>
+              <div className="dp-dot" />
+            </div>
+          )
+        })}
+      </div>
+      <button className="nav-btn" style={{ flexShrink: 0 }} onClick={onNextWeek} title="שבוע הבא">›</button>
+      <button className="nav-btn" style={{ flexShrink: 0 }} onClick={onNextMonthJump} title="חודש הבא">»</button>
     </div>
   )
 }

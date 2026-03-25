@@ -91,6 +91,18 @@ export default function App() {
           d.setMonth(d.getMonth() + 1)
           setCurMonth(d.toISOString().slice(0, 10))
         }}
+        onPrevMonthJump={() => {
+          const d = new Date(curDate + 'T12:00:00')
+          d.setDate(1)
+          d.setMonth(d.getMonth() - 1)
+          setCurDate(d.toISOString().slice(0, 10))
+        }}
+        onNextMonthJump={() => {
+          const d = new Date(curDate + 'T12:00:00')
+          d.setDate(1)
+          d.setMonth(d.getMonth() + 1)
+          setCurDate(d.toISOString().slice(0, 10))
+        }}
       />
 
       <div className="cal-outer" id="calOuter">

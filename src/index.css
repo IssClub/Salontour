@@ -282,12 +282,3 @@ html, body, #root {
   .ch-prov, .slot { min-width: 0; }
 }
 
-@media(min-width: 768px) {
-  .app-wrap {
-    max-width: 960px;
-    margin: 0 auto;
-    border-left: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-    box-shadow: 0 0 40px rgba(0,0,0,.07);
-  }
-}
