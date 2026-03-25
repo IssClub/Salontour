@@ -124,13 +124,19 @@ export default function App() {
       {/* Pending appointments banner */}
       {(() => {
         const pending = data.appointments.filter(a => a.status === 'pending')
-        return pending.length > 0 ? (
-          <div className="reminder-banner" style={{ background: 'var(--amber-bg)', borderColor: 'var(--amber)' }}>
+        if (!pending.length) return null
+        const first = pending.sort((a,b) => a.date.localeCompare(b.date))[0]
+        return (
+          <div
+            className="reminder-banner"
+            style={{ background: 'var(--amber-bg)', borderColor: 'var(--amber)', cursor: 'pointer' }}
+            onClick={() => { setCurDate(first.date); setCurView('day'); setDetailId(first.id) }}
+          >
             <span style={{ color: 'var(--amber)', fontWeight: 700, fontSize: 13 }}>
-              ⏳ {pending.length} {pending.length === 1 ? 'תור ממתין' : 'תורים ממתינים'} לאישור
+              ⏳ {pending.length} {pending.length === 1 ? 'תור ממתין' : 'תורים ממתינים'} לאישור — לחץ לפרטים
             </span>
           </div>
-        ) : null
+        )
       })()}
 
       {/* WhatsApp reminder banner */}
