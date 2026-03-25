@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { today, t2m, m2t, PCOLS, hasConflict, isOnVacation } from '../lib/helpers'
+import { today, t2m, m2t, PCOLS, hasConflict, isOnVacation, getDayHours } from '../lib/helpers'
 
 const DURATIONS = [15, 30, 45, 60, 90, 120, 180]
 
@@ -22,10 +22,16 @@ export default function ApptModal({
   const [showSug,  setShowSug]  = useState(false)
   const nameRef = useRef(null)
 
-  // Conflict check
-  const conflict = date && time && provId
+  // Conflict + vacation check
+  const conflict  = date && time && provId
     ? hasConflict(appointments, date, time, dur, provId, initial.editId || null)
     : false
+  const provOnVac = date && provId ? isOnVacation(vacations, provId, date) : false
+
+  // Time options: 10-minute steps between open and close
+  const { open: dayOpen, close: dayClose } = getDayHours(date || today(), settings)
+  const timeOptions = []
+  for (let m = dayOpen; m < dayClose; m += 10) timeOptions.push(m2t(m))
 
   // On edit — pre-select client chip
   useEffect(() => {
@@ -69,7 +75,7 @@ export default function ApptModal({
 
   function handleSave() {
     if (!name.trim() || !date || !time) return
-    if (conflict) return
+    if (conflict || provOnVac) return
     onSave({
       name: name.trim(),
       phone, service, date,
@@ -89,6 +95,11 @@ export default function ApptModal({
         {conflict && (
           <div className="cwarn on">
             ⚠️ התנגשות עם תור קיים אצל {providers.find(p => p.id === provId)?.name} — שנה שעה או מטפל/ת
+          </div>
+        )}
+        {provOnVac && (
+          <div className="cwarn on">
+            🏖 {providers.find(p => p.id === provId)?.name} בחופשה בתאריך זה — בחר מטפל/ת אחר/ת
           </div>
         )}
 
@@ -189,7 +200,10 @@ export default function ApptModal({
           </div>
           <div className="fr" style={{ margin: 0 }}>
             <label className="fl">שעה</label>
-            <input className="fi" type="time" step="600" value={time} onChange={e => setTime(e.target.value)} />
+            <select className="fi" value={time} onChange={e => setTime(e.target.value)}>
+              <option value="">בחר שעה</option>
+              {timeOptions.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
           </div>
         </div>
 
@@ -234,7 +248,7 @@ export default function ApptModal({
 
         <div className="sa">
           <button className="bs" onClick={onClose}>ביטול</button>
-          <button className="bp" onClick={handleSave} disabled={conflict} style={{ opacity: conflict ? 0.5 : 1 }}>
+          <button className="bp" onClick={handleSave} disabled={conflict || provOnVac} style={{ opacity: (conflict || provOnVac) ? 0.5 : 1 }}>
             שמור תור
           </button>
         </div>
