@@ -70,10 +70,7 @@ export default function DayView({ curDate, settings, providers, appointments, va
         const isH = m % 60 === 0
         return [
           <div key={`tl-${m}`} className={`t-label${isH ? '' : ' half'}`}>
-            {isH
-              ? (m === open ? m2t(m) : '')
-              : <><span style={{ fontSize: 9, opacity: 0.55 }}>{m2t(m)}</span>{m + 30 <= close && <span>{m2t(m + 30)}</span>}</>
-            }
+            {isH ? m2t(m) : m2t(m)}
           </div>,
           ...providers.map(p => {
             const onVac = isOnVacation(vacations, p.id, curDate)
@@ -176,7 +173,7 @@ function ApptBlock({ appt, openMins, closeMins, providers, onClick }) {
   const ref     = useRef(null)
   const prov    = providers.find(p => p.id === appt.provider_id)
   const col     = PCOLS[prov?.color || '1']
-  const sm      = t2m(appt.time)
+  const sm      = Math.min(t2m(appt.time), closeMins - 15)
   const top     = RH + ((sm - openMins) / 30) * RH + 2
   const maxH    = Math.max(((closeMins - sm) / 30) * RH - 5, 26)
   const h       = Math.min(Math.max((appt.duration / 30) * RH - 5, 26), maxH)

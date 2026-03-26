@@ -179,10 +179,15 @@ export function useData() {
     return { error }
   }, [])
 
-  const deleteClientAppointments = useCallback(async (clientId) => {
-    const { error } = await supabase.from('appointments').delete().eq('client_id', clientId)
-    if (!error) setAppointments(prev => prev.filter(a => a.client_id !== clientId))
-    return { error }
+  const deleteClientAppointments = useCallback(async (clientId, clientName) => {
+    await supabase.from('appointments').delete().eq('client_id', clientId)
+    if (clientName) {
+      await supabase.from('appointments').delete().ilike('client_name', clientName)
+    }
+    setAppointments(prev => prev.filter(a =>
+      a.client_id !== clientId &&
+      (!clientName || a.client_name?.toLowerCase() !== clientName.toLowerCase())
+    ))
   }, [])
 
   const updateClient = useCallback(async (id, updates) => {

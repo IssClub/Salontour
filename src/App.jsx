@@ -272,7 +272,10 @@ export default function App() {
           onClose={() => setClientName(null)}
           onApptClick={(id) => { setClientName(null); setDetailId(id) }}
           onDeleteClient={async (id, deleteAppts) => {
-            if (deleteAppts) await data.deleteClientAppointments(id)
+            if (deleteAppts) {
+              const cl = data.clients.find(c => c.id === id)
+              await data.deleteClientAppointments(id, cl?.name)
+            }
             const { error } = await data.deleteClient(id)
             if (error) showToast('שגיאה במחיקה')
             else showToast('הלקוח נמחק')
