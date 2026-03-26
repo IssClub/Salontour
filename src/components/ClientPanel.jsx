@@ -47,10 +47,10 @@ export default function ClientPanel({ name, appointments, providers, clients, on
             className="bd"
             style={{ fontSize: 12, padding: '6px 12px' }}
             onClick={() => {
-              if (window.confirm(`למחוק את הלקוח/ה ${cl.name}?`)) {
-                onDeleteClient(cl.id)
-                onClose()
-              }
+              if (!window.confirm(`למחוק את הלקוח/ה ${cl.name}?`)) return
+              const delAppts = visits.length > 0 && window.confirm(`למחוק גם את ${visits.length} התורים של ${cl.name}?`)
+              onDeleteClient(cl.id, delAppts)
+              onClose()
             }}
           >🗑</button>
         )}

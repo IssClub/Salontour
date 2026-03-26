@@ -31,7 +31,7 @@ export default function ApptModal({
   // Time options: 10-minute steps between open and close
   const { open: dayOpen, close: dayClose } = getDayHours(date || today(), settings)
   const timeOptions = []
-  for (let m = dayOpen; m < dayClose; m += 10) timeOptions.push(m2t(m))
+  for (let m = dayOpen; m < dayClose; m += 15) timeOptions.push(m2t(m))
 
   // On edit — pre-select client chip
   useEffect(() => {
@@ -95,6 +95,12 @@ export default function ApptModal({
         {conflict && (
           <div className="cwarn on">
             ⚠️ התנגשות עם תור קיים אצל {providers.find(p => p.id === provId)?.name} — שנה שעה או מטפל/ת
+          </div>
+        )}
+        {!selClient && name.trim().length >= 2 && clients.find(c => c.name.toLowerCase() === name.trim().toLowerCase()) && (
+          <div className="cwarn on" style={{ cursor: 'pointer' }}
+            onClick={() => selectClient(clients.find(c => c.name.toLowerCase() === name.trim().toLowerCase()))}>
+            👤 קיים לקוח בשם זה — <strong>לחץ לקישור לכרטיסיה הקיימת</strong>
           </div>
         )}
         {provOnVac && (

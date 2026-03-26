@@ -1,10 +1,18 @@
 // ── Topbar.jsx ────────────────────────────────────────────────
 import { DAY_S, today } from '../lib/helpers'
 
+const VIEWS = ['day', 'free', 'month']
+const VLABELS = { day: 'יום', free: 'פנוי', month: 'חודש' }
+
 export default function Topbar({ settings, curDate, curView, onPrevDay, onNextDay, onSetView, onNewAppt, onOpenSettings, onOpenClients, onOpenReminders }) {
   const d    = new Date(curDate + 'T12:00:00')
   const isT  = curDate === today()
   const name = settings.salon_name || 'סלון'
+
+  function cycleView() {
+    const next = VIEWS[(VIEWS.indexOf(curView) + 1) % VIEWS.length]
+    onSetView(next)
+  }
 
   return (
     <div className="topbar">
@@ -23,16 +31,17 @@ export default function Topbar({ settings, curDate, curView, onPrevDay, onNextDa
       </div>
       <div className="topbar-right">
         <div className="view-toggle">
-          {['day','free','month'].map(v => (
+          {VIEWS.map(v => (
             <button
               key={v}
               className={`vt-btn ${curView === v ? 'active' : ''}`}
               onClick={() => onSetView(v)}
             >
-              {{ day:'יום', free:'פנוי', month:'חודש' }[v]}
+              {VLABELS[v]}
             </button>
           ))}
         </div>
+        <button className="view-cycle-btn" onClick={cycleView}>{VLABELS[curView]} ↻</button>
         <button className="icon-btn" onClick={onOpenReminders} title="תזכורות WhatsApp">💬</button>
         <button className="icon-btn" onClick={onOpenClients} title="לקוחות">👥</button>
         <button className="icon-btn" onClick={onOpenSettings} title="הגדרות">⚙</button>

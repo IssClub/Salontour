@@ -162,7 +162,7 @@ export default function App() {
           swipeStartX.current = null
           if (Math.abs(dx) < 60) return
           if (curView === 'day' || curView === 'free') {
-            dx < 0 ? setCurDate(d => addDays(d, 1)) : setCurDate(d => addDays(d, -1))
+            dx > 0 ? setCurDate(d => addDays(d, 1)) : setCurDate(d => addDays(d, -1))
           }
         }}
       >
@@ -240,7 +240,7 @@ export default function App() {
             const { error } = await data.confirmAppointment(id)
             if (error) { showToast('שגיאה בעדכון'); return }
             showToast('התור אושר ✓')
-            if (appt?.phone) {
+            if (appt?.phone && window.confirm('לשלוח הודעת WhatsApp ללקוח?')) {
               const ph  = appt.phone.replace(/\D/g, '').replace(/^0/, '')
               const msg = encodeURIComponent(`שלום ${appt.client_name} 😊\nתורך אושר!\n📅 ${appt.date} בשעה ${appt.time.slice(0,5)}\n✂ ${appt.service || 'טיפול'}\nמחכים לך!`)
               window.open(`https://wa.me/972${ph}?text=${msg}`, '_blank')
@@ -253,7 +253,7 @@ export default function App() {
             if (error) { showToast('שגיאה במחיקה'); return }
             setDetailId(null)
             showToast('הבקשה נדחתה')
-            if (appt?.phone) {
+            if (appt?.phone && window.confirm('לשלוח הודעת WhatsApp ללקוח?')) {
               const ph  = appt.phone.replace(/\D/g, '').replace(/^0/, '')
               const msg = encodeURIComponent(`שלום ${appt.client_name},\nמצטערים, לא הצלחנו לאשר את בקשת התור שלך לתאריך ${appt.date}.\nאנא צור/י קשר עם המספרה לקביעת תור טלפוני 📞`)
               window.open(`https://wa.me/972${ph}?text=${msg}`, '_blank')
@@ -271,7 +271,8 @@ export default function App() {
           clients={data.clients}
           onClose={() => setClientName(null)}
           onApptClick={(id) => { setClientName(null); setDetailId(id) }}
-          onDeleteClient={async (id) => {
+          onDeleteClient={async (id, deleteAppts) => {
+            if (deleteAppts) await data.deleteClientAppointments(id)
             const { error } = await data.deleteClient(id)
             if (error) showToast('שגיאה במחיקה')
             else showToast('הלקוח נמחק')

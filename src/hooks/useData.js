@@ -179,6 +179,12 @@ export function useData() {
     return { error }
   }, [])
 
+  const deleteClientAppointments = useCallback(async (clientId) => {
+    const { error } = await supabase.from('appointments').delete().eq('client_id', clientId)
+    if (!error) setAppointments(prev => prev.filter(a => a.client_id !== clientId))
+    return { error }
+  }, [])
+
   const updateClient = useCallback(async (id, updates) => {
     const { error } = await supabase.from('clients').update(updates).eq('id', id)
     if (!error) setClients(prev => prev.map(c => c.id === id ? { ...c, ...updates } : c))
@@ -232,7 +238,7 @@ export function useData() {
     settings, saveSettings,
     providers, saveProvider, addProvider, deleteProvider,
     appointments, saveAppointment, deleteAppointment, confirmAppointment, rejectAppointment,
-    clients, upsertClient, deleteClient, updateClient,
+    clients, upsertClient, deleteClient, deleteClientAppointments, updateClient,
     vacations, addVacation, deleteVacation,
     deleteAllData, getExportData, importData,
     reload: loadAll,
