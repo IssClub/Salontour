@@ -26,7 +26,9 @@ export default function DayView({ curDate, settings, providers, appointments, va
     wrap.scrollTop = hdrH + ((targetMins - open) / 30) * RH - 10
   }, [curDate, isWork])
 
-  const isClosed = settings.closed_dates?.includes(curDate)
+  const isClosed = settings.closed_dates?.some(r =>
+    typeof r === 'string' ? r === curDate : curDate >= r.from && curDate <= r.to
+  )
 
   if (!isWork || isClosed) return (
     <div style={{ display: 'block' }}>
@@ -126,9 +128,6 @@ export default function DayView({ curDate, settings, providers, appointments, va
 function VacationOverlay({ provider, open, close }) {
   const ref = useRef(null)
   const col = PCOLS[provider.color]
-  const RH = getRH()
-  const totalSlots = (close - open) / 30
-  const h = totalSlots * RH - 4
 
   useEffect(() => {
     if (!ref.current) return
@@ -141,8 +140,12 @@ function VacationOverlay({ provider, open, close }) {
       if (!cell) return
       const cr = cell.getBoundingClientRect()
       const gr = grid.getBoundingClientRect()
+      const slotH = cr.height
+      const totalSlots = (close - open) / 30
       ref.current.style.right = (gr.right - cr.right + 3) + 'px'
       ref.current.style.width = (cr.width - 6) + 'px'
+      ref.current.style.top = (cr.top - gr.top + 2) + 'px'
+      ref.current.style.height = (totalSlots * slotH - 4) + 'px'
       ref.current.style.visibility = 'visible'
     }
 
@@ -150,17 +153,17 @@ function VacationOverlay({ provider, open, close }) {
     const ro = new ResizeObserver(update)
     ro.observe(grid)
     return () => ro.disconnect()
-  }, [provider.id])
+  }, [provider.id, open, close])
 
   return (
     <div
       ref={ref}
       style={{
         position: 'absolute',
-        top: RH + 2,
+        top: 0,
         right: 0,
         width: 0,
-        height: h,
+        height: 0,
         visibility: 'hidden',
         background: `${col}18`,
         border: `2px dashed ${col}66`,
@@ -186,7 +189,6 @@ function ApptBlock({ appt, openMins, closeMins, providers, onClick }) {
   const prov    = providers.find(p => p.id === appt.provider_id)
   const col     = PCOLS[prov?.color || '1']
   const sm      = Math.min(t2m(appt.time), closeMins - 15)
-  const top     = RH + ((sm - openMins) / 30) * RH + 2
   const maxH    = Math.max(((closeMins - sm) / 30) * RH - 5, 26)
   const h       = Math.min(Math.max((appt.duration / 30) * RH - 5, 26), maxH)
   const endT    = m2t(sm + appt.duration)
@@ -204,21 +206,28 @@ function ApptBlock({ appt, openMins, closeMins, providers, onClick }) {
       if (!cell) return
       const cr = cell.getBoundingClientRect()
       const gr = grid.getBoundingClientRect()
+      const slotH = cr.height
+      const hdrTop = cr.top - gr.top
+      const newTop = hdrTop + ((sm - openMins) / 30) * slotH + 2
+      const newMaxH = Math.max(((closeMins - sm) / 30) * slotH - 5, 26)
+      const newH = Math.min(Math.max((appt.duration / 30) * slotH - 5, 26), newMaxH)
       ref.current.style.right = (gr.right - cr.right + 3) + 'px'
       ref.current.style.width = (cr.width - 6) + 'px'
+      ref.current.style.top = newTop + 'px'
+      ref.current.style.height = newH + 'px'
     }
 
     update()
     const ro = new ResizeObserver(update)
     ro.observe(grid)
     return () => ro.disconnect()
-  }, [appt.provider_id, providers])
+  }, [appt.provider_id, providers, sm, openMins, closeMins, appt.duration])
 
   return (
     <div
       ref={ref}
       className="appt"
-      style={{ top, height: h, borderColor: col, position: 'absolute', right: 0, width: 0, opacity: pending ? 0.8 : 1, borderStyle: pending ? 'dashed' : 'solid' }}
+      style={{ top: 0, height: h, borderColor: col, position: 'absolute', right: 0, width: 0, opacity: pending ? 0.8 : 1, borderStyle: pending ? 'dashed' : 'solid' }}
       onClick={e => { e.stopPropagation(); onClick() }}
     >
       <div className="appt-top">

@@ -100,8 +100,11 @@ export default function SettingsPanel({
   const [newSvc,     setNewSvc]     = useState('')
   const [pinBuf,     setPinBuf]     = useState('')
   const [pinStatus,  setPinStatus]  = useState(settings.pin ? '🔒 PIN מוגדר' : '🔓 אין PIN')
-  const [closedDates,setClosedDates]= useState(settings.closed_dates || [])
-  const [newClosed,  setNewClosed]  = useState('')
+  const [closedDates,setClosedDates]= useState(
+    (settings.closed_dates || []).map(r => typeof r === 'string' ? { from: r, to: r } : r)
+  )
+  const [newClosedFrom, setNewClosedFrom] = useState('')
+  const [newClosedTo,   setNewClosedTo]   = useState('')
   const [showVacForm,setShowVacForm]= useState(false)
   const [vacProv,    setVacProv]    = useState(providers[0]?.id || '')
   const [vacFrom,    setVacFrom]    = useState('')
@@ -265,33 +268,37 @@ export default function SettingsPanel({
           {closedDates.length === 0 && (
             <div style={{ padding: '10px 14px', fontSize: 13, color: 'var(--text-dim)' }}>אין ימים סגורים מוגדרים</div>
           )}
-          {[...closedDates].sort().map(ds => {
-            const d = new Date(ds + 'T12:00:00')
-            const label = d.toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })
+          {[...closedDates].sort((a,b) => a.from.localeCompare(b.from)).map((r, i) => {
+            const isSingle = r.from === r.to
+            const label = isSingle
+              ? new Date(r.from + 'T12:00:00').toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })
+              : `${r.from} → ${r.to}`
             return (
-              <div key={ds} className="fpr">
-                <div className="fprl">📅 {label}</div>
-                <button className="brm" onClick={() => setClosedDates(prev => prev.filter(x => x !== ds))}>✕</button>
+              <div key={i} className="fpr">
+                <div className="fprl">🎌 {label}</div>
+                <button className="brm" onClick={() => setClosedDates(prev => prev.filter((_, j) => j !== i))}>✕</button>
               </div>
             )
           })}
-          <div className="fpr" style={{ gap: 8 }}>
-            <input
-              className="fi"
-              type="date"
-              style={{ flex: 1, padding: '7px 10px', fontSize: 13 }}
-              value={newClosed}
-              onChange={e => setNewClosed(e.target.value)}
+          <div className="fr">
+            <label className="fl">טווח סגירה</label>
+            <VacRangePicker
+              from={newClosedFrom}
+              to={newClosedTo}
+              onChange={(f, t) => { setNewClosedFrom(f); setNewClosedTo(t) }}
             />
+          </div>
+          <div style={{ padding: '0 14px 10px', display: 'flex', justifyContent: 'flex-start' }}>
             <button
               onClick={() => {
-                if (newClosed && !closedDates.includes(newClosed)) {
-                  setClosedDates(prev => [...prev, newClosed])
-                  setNewClosed('')
-                }
+                if (!newClosedFrom || !newClosedTo) return
+                setClosedDates(prev => [...prev, { from: newClosedFrom, to: newClosedTo }])
+                setNewClosedFrom('')
+                setNewClosedTo('')
               }}
-              style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 8, padding: '7px 14px', fontFamily: 'Heebo', fontSize: 13, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}
-            >＋</button>
+              disabled={!newClosedFrom || !newClosedTo}
+              style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 8, padding: '7px 14px', fontFamily: 'Heebo', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: (!newClosedFrom || !newClosedTo) ? 0.5 : 1 }}
+            >＋ הוסף</button>
           </div>
         </div>
       </div>

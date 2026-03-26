@@ -19,9 +19,9 @@ export default function DateStrip({
     return (
       <div className="strip" ref={ref}>
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 8px' }}>
-          <button className="nav-btn" onClick={onPrevMonth}>›</button>
+          <button className="nav-btn" onClick={onPrevMonth}>‹</button>
           <div style={{ fontSize: 14, fontWeight: 700 }}>{MONS[d.getMonth()]} {d.getFullYear()}</div>
-          <button className="nav-btn" onClick={onNextMonth}>‹</button>
+          <button className="nav-btn" onClick={onNextMonth}>›</button>
         </div>
       </div>
     )

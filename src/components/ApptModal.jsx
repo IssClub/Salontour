@@ -199,7 +199,7 @@ export default function ApptModal({
         </div>
 
         {/* Date + Time */}
-        <div className="fg2" style={{ alignItems: 'end' }}>
+        <div className="fg2" style={{ alignItems: 'flex-start' }}>
           <div className="fr" style={{ margin: 0 }}>
             <label className="fl">תאריך</label>
             <input className="fi" type="date" value={date} onChange={e => setDate(e.target.value)} style={{ minHeight: 44 }} />
