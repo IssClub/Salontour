@@ -199,14 +199,14 @@ export default function ApptModal({
         </div>
 
         {/* Date + Time */}
-        <div className="fg2">
+        <div className="fg2" style={{ alignItems: 'end' }}>
           <div className="fr" style={{ margin: 0 }}>
             <label className="fl">תאריך</label>
-            <input className="fi" type="date" value={date} onChange={e => setDate(e.target.value)} />
+            <input className="fi" type="date" value={date} onChange={e => setDate(e.target.value)} style={{ minHeight: 44 }} />
           </div>
           <div className="fr" style={{ margin: 0 }}>
             <label className="fl">שעה</label>
-            <select className="fi" value={time} onChange={e => setTime(e.target.value)}>
+            <select className="fi" value={time} onChange={e => setTime(e.target.value)} style={{ minHeight: 44 }}>
               <option value="">בחר שעה</option>
               {timeOptions.map(t => <option key={t} value={t}>{t}</option>)}
             </select>

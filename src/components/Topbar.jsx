@@ -44,7 +44,6 @@ export default function Topbar({ settings, curDate, curView, onPrevDay, onNextDa
         <button className="view-cycle-btn" onClick={cycleView}>{VLABELS[curView]} ↻</button>
         <button className="icon-btn" onClick={onOpenReminders} title="תזכורות WhatsApp">💬</button>
         <button className="icon-btn" onClick={onOpenClients} title="לקוחות">👥</button>
-        <button className="icon-btn" onClick={onOpenSettings} title="הגדרות">⚙</button>
         <button className="add-btn" onClick={onNewAppt}>✂<span className="btn-label"> תור</span></button>
       </div>
     </div>

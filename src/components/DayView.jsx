@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react'
 import { today, t2m, m2t, PCOLS, PLIGHT, siIcon, getDayHours, isOnVacation } from '../lib/helpers'
 
-const RH = 52 // row height px (matches --rh CSS var)
 const TW = 48 // time gutter width
+function getRH() {
+  return parseInt(getComputedStyle(document.documentElement).getPropertyValue('--rh')) || 52
+}
 
 export default function DayView({ curDate, settings, providers, appointments, vacations, onSlotClick, onApptClick }) {
   const gridRef  = useRef(null)
@@ -13,6 +15,7 @@ export default function DayView({ curDate, settings, providers, appointments, va
 
   useEffect(() => {
     if (!isWork || !gridRef.current) return
+    const RH = getRH()
     const { open } = getDayHours(curDate, settings)
     const now  = new Date()
     const nm   = now.getHours() * 60 + now.getMinutes()
@@ -70,7 +73,7 @@ export default function DayView({ curDate, settings, providers, appointments, va
         const isH = m % 60 === 0
         return [
           <div key={`tl-${m}`} className={`t-label${isH ? '' : ' half'}`}>
-            {isH ? m2t(m) : m2t(m)}
+            {m2t(m)}
           </div>,
           ...providers.map(p => {
             const onVac = isOnVacation(vacations, p.id, curDate)
@@ -90,7 +93,7 @@ export default function DayView({ curDate, settings, providers, appointments, va
         ]
       })}
 
-      {/* Vacation overlays — absolute positioned like ApptBlock */}
+      {/* Vacation overlays */}
       {providers.map(p =>
         isOnVacation(vacations, p.id, curDate)
           ? <VacationOverlay key={p.id} provider={p} open={open} close={close} />
@@ -118,6 +121,7 @@ export default function DayView({ curDate, settings, providers, appointments, va
 function VacationOverlay({ provider, open, close }) {
   const ref = useRef(null)
   const col = PCOLS[provider.color]
+  const RH = getRH()
   const totalSlots = (close - open) / 30
   const h = totalSlots * RH - 4
 
@@ -134,6 +138,7 @@ function VacationOverlay({ provider, open, close }) {
       const gr = grid.getBoundingClientRect()
       ref.current.style.right = (gr.right - cr.right + 3) + 'px'
       ref.current.style.width = (cr.width - 6) + 'px'
+      ref.current.style.visibility = 'visible'
     }
 
     update()
@@ -148,9 +153,10 @@ function VacationOverlay({ provider, open, close }) {
       style={{
         position: 'absolute',
         top: RH + 2,
-        right: 3,
-        width: 100,
+        right: 0,
+        width: 0,
         height: h,
+        visibility: 'hidden',
         background: `${col}18`,
         border: `2px dashed ${col}66`,
         color: col,
@@ -171,6 +177,7 @@ function VacationOverlay({ provider, open, close }) {
 
 function ApptBlock({ appt, openMins, closeMins, providers, onClick }) {
   const ref     = useRef(null)
+  const RH      = getRH()
   const prov    = providers.find(p => p.id === appt.provider_id)
   const col     = PCOLS[prov?.color || '1']
   const sm      = Math.min(t2m(appt.time), closeMins - 15)
@@ -206,7 +213,7 @@ function ApptBlock({ appt, openMins, closeMins, providers, onClick }) {
     <div
       ref={ref}
       className="appt"
-      style={{ top, height: h, borderColor: col, position: 'absolute', right: 3, width: 140, opacity: pending ? 0.8 : 1, borderStyle: pending ? 'dashed' : 'solid' }}
+      style={{ top, height: h, borderColor: col, position: 'absolute', right: 0, width: 0, opacity: pending ? 0.8 : 1, borderStyle: pending ? 'dashed' : 'solid' }}
       onClick={e => { e.stopPropagation(); onClick() }}
     >
       <div className="appt-top">
@@ -221,6 +228,7 @@ function ApptBlock({ appt, openMins, closeMins, providers, onClick }) {
 }
 
 function NowLine({ openMins, nowMins }) {
+  const RH  = getRH()
   const top = RH + ((nowMins - openMins) / 30) * RH
   return (
     <div

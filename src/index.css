@@ -119,7 +119,7 @@ html, body, #root {
 .ph-av { width: 30px; height: 30px; border-radius: 50%; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #fff; }
 .ph-name { font-size: 13px; font-weight: 700; }
 .ph-count { font-size: 10px; color: var(--text-mid); margin-top: 1px; }
-.t-label { width: var(--tw); height: var(--rh); background: var(--surface); border-left: 1px solid var(--border); border-bottom: 1px dashed rgba(0,0,0,.12); display: flex; align-items: flex-start; justify-content: flex-end; padding: 3px 7px 0; font-size: 10px; font-weight: 600; color: var(--text-dim); z-index: 10; }
+.t-label { width: var(--tw); height: var(--rh); background: var(--surface); border-left: 1px solid var(--border); border-bottom: 1px dashed rgba(0,0,0,.12); display: flex; align-items: flex-start; justify-content: flex-end; padding: 3px 7px 0; font-size: 10px; font-weight: 600; color: var(--text-dim); position: relative; z-index: 10; }
 .t-label.half { border-bottom: 1px solid var(--border); color: var(--text-dim); align-items: flex-start; padding: 3px 7px 0; font-size: 9px; font-weight: 400; opacity: 0.7; }
 .slot { height: var(--rh); border-left: 1px solid var(--border); border-bottom: 1px dashed rgba(0,0,0,.06); position: relative; cursor: pointer; min-width: 150px; transition: filter .1s; }
 .slot.half { border-bottom: 1px solid var(--border); }
