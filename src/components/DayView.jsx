@@ -26,9 +26,14 @@ export default function DayView({ curDate, settings, providers, appointments, va
     wrap.scrollTop = hdrH + ((targetMins - open) / 30) * RH - 10
   }, [curDate, isWork])
 
-  if (!isWork) return (
+  const isClosed = settings.closed_dates?.includes(curDate)
+
+  if (!isWork || isClosed) return (
     <div style={{ display: 'block' }}>
-      <div className="no-work"><div style={{ fontSize: 36 }}>🌿</div><div>יום מנוחה — הסלון סגור</div></div>
+      <div className="no-work">
+        <div style={{ fontSize: 36 }}>{isClosed ? '🎌' : '🌿'}</div>
+        <div>{isClosed ? 'הסלון סגור — חג/אירוע מיוחד' : 'יום מנוחה — הסלון סגור'}</div>
+      </div>
     </div>
   )
 

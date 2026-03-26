@@ -100,6 +100,8 @@ export default function SettingsPanel({
   const [newSvc,     setNewSvc]     = useState('')
   const [pinBuf,     setPinBuf]     = useState('')
   const [pinStatus,  setPinStatus]  = useState(settings.pin ? '🔒 PIN מוגדר' : '🔓 אין PIN')
+  const [closedDates,setClosedDates]= useState(settings.closed_dates || [])
+  const [newClosed,  setNewClosed]  = useState('')
   const [showVacForm,setShowVacForm]= useState(false)
   const [vacProv,    setVacProv]    = useState(providers[0]?.id || '')
   const [vacFrom,    setVacFrom]    = useState('')
@@ -137,6 +139,7 @@ export default function SettingsPanel({
       day_hours: dayHours,
       services,
       pin: newPin,
+      closed_dates: closedDates,
     })
   }
 
@@ -252,6 +255,44 @@ export default function SettingsPanel({
               </div>
             )
           })}
+        </div>
+      </div>
+
+      {/* Closed Dates / Holidays */}
+      <div className="fps">
+        <div className="fpst">🎌 ימים סגורים (חגים)</div>
+        <div className="fpc">
+          {closedDates.length === 0 && (
+            <div style={{ padding: '10px 14px', fontSize: 13, color: 'var(--text-dim)' }}>אין ימים סגורים מוגדרים</div>
+          )}
+          {[...closedDates].sort().map(ds => {
+            const d = new Date(ds + 'T12:00:00')
+            const label = d.toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })
+            return (
+              <div key={ds} className="fpr">
+                <div className="fprl">📅 {label}</div>
+                <button className="brm" onClick={() => setClosedDates(prev => prev.filter(x => x !== ds))}>✕</button>
+              </div>
+            )
+          })}
+          <div className="fpr" style={{ gap: 8 }}>
+            <input
+              className="fi"
+              type="date"
+              style={{ flex: 1, padding: '7px 10px', fontSize: 13 }}
+              value={newClosed}
+              onChange={e => setNewClosed(e.target.value)}
+            />
+            <button
+              onClick={() => {
+                if (newClosed && !closedDates.includes(newClosed)) {
+                  setClosedDates(prev => [...prev, newClosed])
+                  setNewClosed('')
+                }
+              }}
+              style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 8, padding: '7px 14px', fontFamily: 'Heebo', fontSize: 13, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}
+            >＋</button>
+          </div>
         </div>
       </div>
 

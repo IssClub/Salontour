@@ -15,6 +15,7 @@ const DEFAULT_SETTINGS = {
   default_duration: 15,
   day_hours: {},
   services: [],
+  closed_dates: [],
 }
 
 export function useData() {
